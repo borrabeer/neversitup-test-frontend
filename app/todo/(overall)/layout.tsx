@@ -36,6 +36,7 @@ export default function TodoLayout({
         </div>
         <div className="drawer-side">
           <label
+            id="create_todo_drawer_overlay"
             htmlFor="create_todo_drawer"
             aria-label="close sidebar"
             className="drawer-overlay"

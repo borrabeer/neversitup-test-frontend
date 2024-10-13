@@ -5,10 +5,15 @@ import TodoCard from './todo-card';
 
 export default async function TodoCardsWrapper() {
   const response = await getTodos();
-  const pendingTasks = response.filter((todo) => !todo.is_done);
+  const pendingTasks = response
+    .filter((todo) => !todo.is_done)
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
 
   return (
-    <div className="flex w-full max-w-[400px] h-full flex-col gap-2 md:gap-4 overflow-y-scroll pb-32">
+    <div className="flex w-full max-w-[400px] h-screen flex-col gap-2 md:gap-4 overflow-y-auto pb-32">
       {pendingTasks.map((task) => (
         <TodoCard todo={task} key={task.id} />
       ))}

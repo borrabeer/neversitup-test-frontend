@@ -1,11 +1,13 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { backendAPI } from '../axios';
+import { backendAPI } from '../axios-client';
 import { redirect } from 'next/navigation';
 import { Todo } from './definitions';
 import { revalidatePath } from 'next/cache';
 import * as yup from 'yup';
+import { initializeAxios } from '../axios';
+import dayjs from 'dayjs';
 
 export async function register({
   username,
@@ -97,9 +99,10 @@ export async function authenticate(
 
 export async function getTodos(): Promise<Todo[]> {
   try {
+    initializeAxios();
     const { data } = await backendAPI.get('todo');
 
-    return data.data;
+    return data.data || [];
   } catch (error: unknown) {
     console.error('Error fetching todos:', error);
     throw new Error('Failed to fetch todos');
@@ -108,6 +111,7 @@ export async function getTodos(): Promise<Todo[]> {
 
 export async function editTodo(id: string, data: Todo) {
   try {
+    initializeAxios();
     await backendAPI.patch(`todo/${id}`, data);
   } catch (error: unknown) {
     console.error('Error editing todo:', error);
@@ -118,6 +122,8 @@ export async function editTodo(id: string, data: Todo) {
 export async function checkTodos(selected: Todo[]) {
   try {
     const checkedTodos = selected.filter((value) => value.is_done === true);
+
+    initializeAxios();
 
     await Promise.all(checkedTodos.map((todo) => editTodo(todo.id, todo)));
 
@@ -148,18 +154,26 @@ export async function createTodo(formData: FormData) {
       dueTime: formData.get('dueTime'),
     });
 
+  console.log(formData);
+
   try {
-    await backendAPI.post('todo', {
+    initializeAxios();
+    const { data } = await backendAPI.post('todo', {
       title,
       description,
-      due_date: `${dueDate} ${dueTime}`,
+      due_date: dayjs(dueDate)
+        .hour(Number(dueTime.split(':')[0]))
+        .minute(Number(dueTime.split(':')[1]))
+        .toISOString(),
     });
+
+    console.log(data);
 
     revalidatePath('/todo');
   } catch (error: unknown) {
     console.error('Error creating todo:', error);
     throw new Error('Failed to create todo');
   } finally {
-    redirect('/todo');
+    redirect('/');
   }
 }

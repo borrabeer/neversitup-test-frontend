@@ -1,10 +1,12 @@
+'use server';
+
 import CheckTodoCardsWrapper from '@/app/ui/todo/check/check-cards-wrapper';
 import TodoCardSkeleton from '@/app/ui/todo/skeletons/card-skeleton';
 import { Bars2Icon } from '@heroicons/react/16/solid';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-export default function TodoCheckPage() {
+export default async function TodoCheckPage() {
   return (
     <div className="flex h-screen overflow-hidden relative">
       <div className="flex-grow w-full p-4 flex justify-center">

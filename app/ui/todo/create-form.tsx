@@ -24,6 +24,7 @@ export default function TodoCreateForm() {
     register,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm<CreateTodoInputs>({
     resolver: yupResolver(createTodoSchema),
   });
@@ -36,6 +37,12 @@ export default function TodoCreateForm() {
     formData.append('dueTime', data.dueTime);
 
     await createTodo(formData);
+
+    reset();
+
+    (
+      document.getElementById('create_todo_drawer_overlay') as HTMLLabelElement
+    ).click();
   };
 
   return (
