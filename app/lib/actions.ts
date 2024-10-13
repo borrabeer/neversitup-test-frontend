@@ -154,11 +154,9 @@ export async function createTodo(formData: FormData) {
       dueTime: formData.get('dueTime'),
     });
 
-  console.log(formData);
-
   try {
     initializeAxios();
-    const { data } = await backendAPI.post('todo', {
+    await backendAPI.post('todo', {
       title,
       description,
       due_date: dayjs(dueDate)
@@ -166,8 +164,6 @@ export async function createTodo(formData: FormData) {
         .minute(Number(dueTime.split(':')[1]))
         .toISOString(),
     });
-
-    console.log(data);
 
     revalidatePath('/todo');
   } catch (error: unknown) {
